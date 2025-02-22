@@ -1,35 +1,23 @@
 import asyncio
-from groq import AsyncGroq
-import httpx
+from enum import Enum
 from pydantic import BaseModel
 from pydantic_ai import Agent
-from pydantic_ai.models.groq import GroqModel
 from typing import List, Optional
-from config import GROQ_API_KEY, PROXY
 
-# Настройка HTTP-клиента с прокси
-transport = httpx.AsyncHTTPTransport(proxy=PROXY)
-client_httpx = httpx.AsyncClient(transport=transport)
-
-# Инициализация клиента Groq
-groq_client = AsyncGroq(api_key=GROQ_API_KEY, http_client=client_httpx)
-model = GroqModel(model_name="deepseek-r1-distill-llama-70b", groq_client=groq_client)
+from utils.base import model
 
 
-# Определяем модели для контент-плана и статьи
-class ContentPlanArticle(BaseModel):
-    title: str
-    short_description: Optional[str] = None
+class FastCommand(Enum):
+    REWRITE: str = "Перерепиши статью"
+    COMPLICATE: str = "Усложни статью"
+    SIMPLIFY: str = "Упрости статью"
+    TRANSLATE_RU: str = "Переведи статью на русский"
+    TRANSLATE_EN: str = "Переведи статью на английский"
+    SUMMURIZE: str = "Суммаризируй и сократи статью"
+    EXTEND: str = "Расшири статью"
 
 
-class ContentPlanData(BaseModel):
-    articles: List[ContentPlanArticle]
 
-
-class ArticleData(BaseModel):
-    title: str
-    short_description: Optional[str] = None
-    content: str
 
 
 # Создаем агента для контент-плана
@@ -112,6 +100,47 @@ async def generate_articles_sequentially(
         )
         articles.append(art)
     return articles
+
+
+async def generate_update_articles(
+    article: ArticleData,
+    fast_command: Optional[FastCommand] = None,
+    user_prompt: Optional[str] = None,
+    language: str = "ru",  # Код языка по умолчанию, например, русский
+    use_translation: bool = False,  # Флаг для включения перевода
+    max_length: int = 1024,  # Максимальная длина генерируемого текста
+    num_iterations: int = 1  # Количество итераций для улучшения текста
+) -> ArticleData:
+    """
+    Рерайтит статью по запросу пользователя с возможностью перевода и настройки генерации.
+    """
+    if fast_command:
+        prompt = f"""
+        Обнови статью по следующему запросу: {fast_command}.
+        Статья для обновления:
+        {article.content}
+        """
+    elif user_prompt:
+        prompt = f"""
+        Перепиши статью по следующему запросу: {user_prompt}.
+        Статья для обновления:
+        {article.content}
+        """
+    else:
+        raise ValueError("Не указан ни fast_command, ни user_prompt")
+
+    # Добавляем дополнительные параметры в prompt
+    prompt += f"""
+    Параметры:
+    - Язык: {language}
+    - Перевод: {"включен" if use_translation else "выключен"}
+    - Максимальная длина: {max_length}
+    - Количество итераций: {num_iterations}
+    """
+
+    result = await agent_article.run(prompt)
+
+    return result.data
 
 
 # Пример основного вызова

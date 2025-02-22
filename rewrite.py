@@ -20,10 +20,15 @@ class RewriteData(BaseModel):
 
 agent_rewrite = Agent(model, result_type=RewriteData)
 
-async def rewrite_article(source_text: str) -> RewriteData:
+async def   rewrite_article(source_text: str) -> RewriteData:
     prompt = f"""
-    Перепиши следующий текст так, чтобы сохранить основную идею, но сделать его уникальным, грамотным и легко читаемым:
-    {source_text}
+    Перепиши следующий текст так, чтобы сохранить основную идею, но сделай его уникальным, грамотным и легко читаемым. Верни результат строго в формате JSON с тремя ключами:
+    
+    "title": "Новый заголовок",
+    "short_description": "Краткое описание",
+    "content": "Полный переписанный текст статьи"
+    
+    Текст для переписывания: {source_text}
     """
     result = await agent_rewrite.run(prompt)
     return result.data
