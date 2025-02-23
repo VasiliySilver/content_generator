@@ -116,3 +116,11 @@ async def get_article(article_id: str):
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     return templates.TemplateResponse("article_detail.html", {"article": article})
+
+@router.get("/api/v1/ui/content-plan/{task_id}", response_class=HTMLResponse)
+async def get_content_plan(task_id: str):
+    task_result = AsyncResult(task_id)
+    if task_result.state == "FAILURE":
+        raise HTTPException(status_code=500, detail=str(task_result.info))
+    content_plan = task_result.result
+    return templates.TemplateResponse("content_plan_result.html", {"content_plan": content_plan})
