@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}Article Detail{% endblock %}
+
+{% block content %}
+<h2>{{ article.title }}</h2>
+<p><strong>Author:</strong> {{ article.author }}</p>
+<p><strong>Created at:</strong> {{ article.created_at }}</p>
+<div>
+    {{ article.content | safe }}
+</div>
+{% endblock %}

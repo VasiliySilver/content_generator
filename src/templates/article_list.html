@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+<h2>Articles</h2>
+<ul>
+    {% for article in articles %}
+    <li>
+        <a href="/api/v1/ui/article/{{ article.id }}">{{ article.title }}</a> - {{ article.author }}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
