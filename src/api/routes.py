@@ -101,3 +101,18 @@ async def get_task(task_id: str):
         "status": task_result.state,
         "result": task_result.result,
     }})
+
+@router.get("/api/v1/ui/articles", response_class=HTMLResponse)
+async def get_articles():
+    articles = [
+        {"id": article.id, "title": article.title, "author": article.author}
+        for article in AsyncResult().backend.get_all_articles()
+    ]
+    return templates.TemplateResponse("article_list.html", {"articles": articles})
+
+@router.get("/api/v1/ui/article/{article_id}", response_class=HTMLResponse)
+async def get_article(article_id: str):
+    article = AsyncResult().backend.get_article(article_id)
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return templates.TemplateResponse("article_detail.html", {"article": article})
