@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}Content Plan{% endblock %}
+
+{% block content %}
+<h2>Content Plan</h2>
+<p>Topic: {{ content_plan.topic }}</p>
+<ul>
+    {% for article in content_plan.articles %}
+    <li>{{ article.title }} - {{ article.author }}</li>
+    {% endfor %}
+</ul>
+<form action="/api/v1/articles/sequential" method="post">
+    <input type="hidden" name="plan" value="{{ content_plan.id }}">
+    <button type="submit">Generate Articles</button>
+</form>
+{% endblock %}
