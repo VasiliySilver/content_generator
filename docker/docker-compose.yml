@@ -37,7 +37,7 @@ services:
     container_name: worker
     command: ["sh", "-c", "poetry run celery -A core.tasks worker --loglevel=info"]
     volumes:
-      - .:/app
+      - ../src:/app/src
     depends_on:
       - redis
     environment:

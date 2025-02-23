@@ -1,7 +1,9 @@
-# Content Generator Project
+# Experimetal Project - Content Generator Project
+
+![Content Generator](docs/imgs/content-generator.png)
 
 ## Описание проекта
-Этот проект предназначен для генерации контент-планов и статей, а также для переписывания и обновления существующих статей с использованием Celery для асинхронных задач.
+Это образовательный проект предназначен для генерации контент-планов и статей, а также для переписывания и обновления существующих статей с использованием Celery для асинхронных задач.
 
 ## Требования
 - Docker
@@ -9,6 +11,8 @@
 - Poetry
 
 ## Быстрый старт
+0. Скопируйте .env.example в .env и заполните необходимые переменные окружения.
+
 1. Клонируйте репозиторий:
    ```bash
    git clone <repository_url>
@@ -32,10 +36,16 @@
 
 ## Структура проекта
 - `docker/` - файлы для Docker и Docker Compose
-- `tasks.py` - Celery задачи
-- `pipeline.py` - функции для генерации контент-планов и статей
-- `rewrite.py` - функции для переписывания статей
-- `celeryconfig.py` - конфигурация Celery
+- `src/` - исходный код проекта
+  - `api/` - API endpoints
+  - `core/` - основная логика проекта
+  - `enums/` - перечисления
+  - `schemas/` - схемы данных
+  - `static/` - статические файлы (CSS, JavaScript)
+  - `templates/` - шаблоны HTML
+  - `tests/` - тесты
+  - `utils/` - вспомогательные функции
+- `utils/` - скрипты и утилиты
 - `Makefile` - команды для управления проектом
 - `README.md` - документация проекта
 
@@ -68,3 +78,19 @@ make test
 ```bash
 make lint
 ```
+## Скриншоты
+
+### Главная страница
+![Главная страница](docs/imgs/content-generator-main.png)
+
+### Страница задач
+![Страница задач](docs/imgs/content-generator-tasks.png)
+
+### Детали задачи
+![Детали задачи](docs/imgs/content-generator-task-details.png)
+
+### Страница статей
+![Страница статей](docs/imgs/content-generator-articles.png)
+
+### Диаграмма последовательности
+![Диаграмма последовательности](docs/imgs/sequence-diagram.png)

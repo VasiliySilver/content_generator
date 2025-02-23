@@ -1,9 +1,55 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "name": "uvicorn",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": ["api.main:app", "--reload", "--port=8000"]
+        },
+        {
+            "name": "Celery",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": [
+                "-A",
+                "core.tasks",
+                "worker",
+                "--loglevel=info"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "Flower",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": [
+                "-A",
+                "core.tasks",
+                "flower",
+                "--port=5555"
+            ],
+            "jinja": true
+        },
         {
             "name": "auto_generation.py",
             "type": "debugpy",

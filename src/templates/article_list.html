@@ -1,14 +1,199 @@
 {% extends "layout.html" %}
 
-{% block title %}Articles{% endblock %}
+{% block title %}Generated Articles{% endblock %}
 
 {% block content %}
-<h2>Articles</h2>
-<ul>
-    {% for article in articles %}
-    <li>
-        <a href="/api/v1/ui/article/{{ article.id }}">{{ article.title }}</a> - {{ article.author }}
-    </li>
-    {% endfor %}
-</ul>
+<div class="articles-container">
+    <div class="articles-header">
+        <h2>Generated Articles</h2>
+        <div class="articles-actions">
+            <a href="/" class="btn-primary">Generate New Articles</a>
+        </div>
+    </div>
+
+    <div class="articles-layout">
+        <div class="articles-list">
+            {% if articles %}
+                {% for article in articles %}
+                    <div class="article-card article-link" data-article-id="{{ article.id }}">
+                        <div class="article-preview">
+                            <h3>{{ article.title }}</h3>
+                            <div class="article-meta">
+                                <span class="article-author">By {{ article.author }}</span>
+                                <span class="article-date">{{ article.created_at }}</span>
+                            </div>
+                            {% if article.short_description %}
+                                <p class="article-description">{{ article.short_description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-articles">
+                    <p>No articles found. Generate some content to get started!</p>
+                    <a href="/" class="btn-primary">Create Content Plan</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="article-detail" class="article-detail hidden">
+            <div class="article-detail-header">
+                <h3 id="article-title"></h3>
+                <button class="btn-close" id="close-detail">×</button>
+            </div>
+            <div class="article-detail-meta">
+                <span id="article-author"></span>
+                <span id="article-date"></span>
+            </div>
+            <div id="article-content" class="article-content"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.articles-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.articles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.articles-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+}
+
+.articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.article-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.article-card.active {
+    border: 2px solid var(--primary-color);
+}
+
+.article-preview h3 {
+    margin: 0 0 10px 0;
+    color: var(--dark-color);
+}
+
+.article-meta {
+    display: flex;
+    gap: 15px;
+    color: var(--secondary-color);
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.article-description {
+    color: var(--secondary-color);
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.article-detail {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 30px;
+    position: sticky;
+    top: 20px;
+}
+
+.article-detail.hidden {
+    display: none;
+}
+
+.article-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.article-detail-header h3 {
+    margin: 0;
+    color: var(--dark-color);
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--secondary-color);
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.btn-close:hover {
+    color: var(--primary-color);
+}
+
+.article-detail-meta {
+    color: var(--secondary-color);
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+.article-content {
+    line-height: 1.6;
+    color: var(--dark-color);
+}
+
+.no-articles {
+    text-align: center;
+    padding: 40px;
+    background: var(--light-color);
+    border-radius: 8px;
+}
+
+.no-articles p {
+    margin-bottom: 20px;
+    color: var(--secondary-color);
+}
+
+@media (max-width: 1024px) {
+    .articles-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .article-detail {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .articles-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+</style>
+
+<script src="/static/js/articles.js"></script>
 {% endblock %}
