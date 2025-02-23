@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Task Detail{% endblock %}
+
+{% block content %}
+<h2>Task Detail</h2>
+<p>Task ID: {{ task.task_id }}</p>
+<p>Status: {{ task.status }}</p>
+{% if task.result %}
+<h3>Result:</h3>
+<pre>{{ task.result | tojson }}</pre>
+{% endif %}
+{% endblock %}
