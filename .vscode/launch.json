@@ -1,0 +1,68 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "uvicorn",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": ["api.main:app", "--reload", "--port=8000"]
+        },
+        {
+            "name": "Celery",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": [
+                "-A",
+                "core.tasks",
+                "worker",
+                "--loglevel=info"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "Flower",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}",
+                "DEBUG": "1"
+            },
+            "cwd": "${workspaceFolder}/src",
+            "args": [
+                "-A",
+                "core.tasks",
+                "flower",
+                "--port=5555"
+            ],
+            "jinja": true
+        },
+        {
+            "name": "auto_generation.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/auto_generation.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

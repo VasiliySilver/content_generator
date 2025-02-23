@@ -1,0 +1,217 @@
+{% extends "layout.html" %}
+
+{% block title %}Tasks List{% endblock %}
+
+{% block content %}
+<div class="tasks-container">
+    <div class="tasks-header">
+        <h2>Tasks List</h2>
+        <div class="tasks-actions">
+            <button onclick="location.reload()" class="btn-refresh">
+                <span class="refresh-icon">⟳</span> Refresh
+            </button>
+            <a href="/" class="btn-primary">Create New Task</a>
+        </div>
+    </div>
+
+    {% if tasks %}
+        <div class="tasks-grid">
+            {% for task in tasks %}
+                <div class="task-card">
+                    <div class="task-header">
+                        <span class="task-id">Task ID: {{ task.task_id[:8] }}...</span>
+                        <span class="status-badge status-{{ task.status|lower }}">{{ task.status }}</span>
+                    </div>
+                    <div class="task-content">
+                        {% if task.result %}
+                            <div class="task-info">
+                                {% if task.result.topic %}
+                                    <p><strong>Topic:</strong> {{ task.result.topic }}</p>
+                                {% endif %}
+                                {% if task.result.articles %}
+                                    <p><strong>Articles:</strong> {{ task.result.articles|length }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <div class="task-actions">
+                            <a href="/api/v1/ui/content-plan/{{ task.task_id }}" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-tasks">
+            <p>No tasks found. Create a new content plan to get started.</p>
+            <a href="/" class="btn-primary">Create Content Plan</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.tasks-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.tasks-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-refresh {
+    background: var(--light-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.refresh-icon {
+    font-size: 1.2em;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.task-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.task-header {
+    background: var(--light-color);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.task-id {
+    font-family: monospace;
+    color: var(--secondary-color);
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.status-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.status-pending {
+    background-color: var(--warning-color);
+    color: black;
+}
+
+.status-failure {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.task-content {
+    padding: 15px;
+}
+
+.task-info {
+    margin-bottom: 15px;
+}
+
+.task-info p {
+    margin: 5px 0;
+    color: var(--dark-color);
+}
+
+.task-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-view {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-view:hover {
+    background: var(--primary-color-dark);
+}
+
+.no-tasks {
+    text-align: center;
+    padding: 40px;
+    background: var(--light-color);
+    border-radius: 8px;
+}
+
+.no-tasks p {
+    margin-bottom: 20px;
+    color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .tasks-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .tasks-actions {
+        flex-direction: column;
+    }
+
+    .tasks-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Автоматическое обновление каждые 5 секунд
+setInterval(function() {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newTasks = doc.querySelector('.tasks-grid');
+            if (newTasks) {
+                document.querySelector('.tasks-grid').innerHTML = newTasks.innerHTML;
+            }
+        });
+}, 5000);
+</script>
+{% endblock %}
