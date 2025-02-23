@@ -8,6 +8,7 @@ from core.tasks import (
     generate_update_articles_task,
 )
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from src.api.schemas import (
     SequentialArticlesRequest,
     RewriteArticleRequest,
@@ -16,6 +17,7 @@ from src.api.schemas import (
     ContentPlan,
 )
 
+templates = Jinja2Templates(directory="src/templates")
 router = APIRouter()
 
 class ContentPlanRequest(BaseModel):
@@ -80,3 +82,22 @@ async def update_articles(request: UpdateArticlesRequest):
         request.num_iterations
     ])
     return {"task_id": task.id, "status": task.status}
+
+@router.get("/api/v1/ui/tasks", response_class=HTMLResponse)
+async def get_tasks():
+    tasks = [
+        {"task_id": task.id, "status": task.status}
+        for task in AsyncResult().backend.get_all_tasks()
+    ]
+    return templates.TemplateResponse("task_list.html", {"tasks": tasks})
+
+@router.get("/api/v1/ui/task/{task_id}", response_class=HTMLResponse)
+async def get_task(task_id: str):
+    task_result = AsyncResult(task_id)
+    if task_result.state == "FAILURE":
+        raise HTTPException(status_code=500, detail=str(task_result.info))
+    return templates.TemplateResponse("task_detail.html", {"task": {
+        "task_id": task_id,
+        "status": task_result.state,
+        "result": task_result.result,
+    }})
