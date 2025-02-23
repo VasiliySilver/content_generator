@@ -7,8 +7,8 @@ from pydantic import BaseModel
 class Source(BaseModel):
     id: Optional[str]
     name: str
-    
-    
+
+
 class NewsApiConfig(BaseModel):
     api_url: str
     token: str
@@ -25,6 +25,7 @@ class Article(BaseModel):
     publishedAt: str
     content: Optional[str]
 
+
 class TopHeadlinesResponse(BaseModel):
     status: str
     totalResults: int
@@ -39,6 +40,7 @@ class NewsSource(BaseModel):
     category: Optional[str]
     language: Optional[str]
     country: Optional[str]
+
 
 class SourcesResponse(BaseModel):
     status: str

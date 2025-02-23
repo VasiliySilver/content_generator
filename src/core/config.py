@@ -1,5 +1,4 @@
 from decouple import config
-from pydantic import BaseModel
 
 
 GROQ_API_KEY = config("GROQ_API_KEY", cast=str, default="Your_default_API_key")

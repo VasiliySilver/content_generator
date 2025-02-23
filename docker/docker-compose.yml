@@ -1,0 +1,45 @@
+x-service-template: &service-template
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+  image: content_generator:latest
+  environment:
+    - CELERY_BROKER_URL=redis://redis:6379/0
+    - CELERY_RESULT_BACKEND=redis://redis:6379/1
+  volumes:
+    - ../src:/app/src
+  depends_on:
+    - redis
+
+services:
+  redis:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  api:
+    <<: *service-template
+    container_name: api
+    command: ["sh", "-c", "poetry run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"]
+    volumes:
+      - ../src:/app/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+
+  worker:
+    <<: *service-template
+    container_name: worker
+    command: ["sh", "-c", "poetry run celery -A core.tasks worker --loglevel=info"]
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1

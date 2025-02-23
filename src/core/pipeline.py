@@ -1,10 +1,10 @@
 import asyncio
 from enum import Enum
-from pydantic import BaseModel
 from pydantic_ai import Agent
 from typing import List, Optional
 
 from utils.base import model
+from schemas.base import ContentPlanData, ArticleData, ContentPlanArticle
 
 
 class FastCommand(Enum):
@@ -15,9 +15,6 @@ class FastCommand(Enum):
     TRANSLATE_EN: str = "Переведи статью на английский"
     SUMMURIZE: str = "Суммаризируй и сократи статью"
     EXTEND: str = "Расшири статью"
-
-
-
 
 
 # Создаем агента для контент-плана
@@ -109,7 +106,7 @@ async def generate_update_articles(
     language: str = "ru",  # Код языка по умолчанию, например, русский
     use_translation: bool = False,  # Флаг для включения перевода
     max_length: int = 1024,  # Максимальная длина генерируемого текста
-    num_iterations: int = 1  # Количество итераций для улучшения текста
+    num_iterations: int = 1,  # Количество итераций для улучшения текста
 ) -> ArticleData:
     """
     Рерайтит статью по запросу пользователя с возможностью перевода и настройки генерации.
